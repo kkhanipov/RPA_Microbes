@@ -192,7 +192,7 @@ int main()
 	PCR_Profile * pareto_PCR_profile_target = new PCR_Profile(PCR_Profile_array_target->get_pcr_profile(pareto_index)); assert(pareto_PCR_profile_target);
 	
 	cout << "Background % Amplified" << "\t" << "Target % Amplified" << endl;
-	cout << pareto_PCR_profile_background->get_total_lenght_long_amplicons() / background->get_pointer_to_sequence_object(0)->get_usable_length() << "\t" << pareto_PCR_profile_target->get_total_lenght_long_amplicons() / target->get_pointer_to_sequence_object(0)->get_usable_length() << endl;
+	cout << (double)pareto_PCR_profile_background->get_total_lenght_long_amplicons() / (double)background->get_pointer_to_sequence_object(0)->get_usable_length() << "\t" << (double)pareto_PCR_profile_target->get_total_lenght_long_amplicons() / (double)target->get_pointer_to_sequence_object(0)->get_usable_length() << endl;
 	PCR_Profile_array_background->compress_left();
 	PCR_Profile_array_target->compress_left();
 
@@ -234,7 +234,7 @@ int main()
 			pareto_PCR_profile_background = new PCR_Profile(PCR_Profile_array_background->get_pcr_profile(pareto_index)); assert(pareto_PCR_profile_background);
 			pareto_PCR_profile_target = new PCR_Profile(PCR_Profile_array_target->get_pcr_profile(pareto_index)); assert(pareto_PCR_profile_target);
 
-			cout << pareto_PCR_profile_background->get_total_lenght_long_amplicons() / background->get_pointer_to_sequence_object(0)->get_usable_length() << "\t" << pareto_PCR_profile_target->get_total_lenght_long_amplicons() / target->get_pointer_to_sequence_object(0)->get_usable_length() << endl;
+			cout << (double)pareto_PCR_profile_background->get_total_lenght_long_amplicons() / (double)background->get_pointer_to_sequence_object(0)->get_usable_length() << "\t" << (double)pareto_PCR_profile_target->get_total_lenght_long_amplicons() / (double)target->get_pointer_to_sequence_object(0)->get_usable_length() << endl;
 
 			PCR_Profile_array_background->compress_left();
 			PCR_Profile_array_target->compress_left();
