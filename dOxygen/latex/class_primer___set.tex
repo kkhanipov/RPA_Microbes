@@ -1,0 +1,67 @@
+\hypertarget{class_primer___set}{}\section{Primer\+\_\+\+Set Class Reference}
+\label{class_primer___set}\index{Primer\+\_\+\+Set@{Primer\+\_\+\+Set}}
+\subsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{class_primer___set_ab9db4a9ad37106aac40762b7b4d57d4f}\label{class_primer___set_ab9db4a9ad37106aac40762b7b4d57d4f}} 
+{\bfseries Primer\+\_\+\+Set} (unsigned int array\+\_\+size\+\_\+primers, unsigned int \+\_\+primer\+\_\+length, ostream \&err\+\_\+msg=cout)
+\item 
+\mbox{\Hypertarget{class_primer___set_ae81dafc2ac39deb5480f68dac440e88e}\label{class_primer___set_ae81dafc2ac39deb5480f68dac440e88e}} 
+{\bfseries Primer\+\_\+\+Set} (char $\ast$filename, ostream \&err\+\_\+msg=cout)
+\item 
+\mbox{\Hypertarget{class_primer___set_a47c64ebda73f5a9d34d68f3c116c09cf}\label{class_primer___set_a47c64ebda73f5a9d34d68f3c116c09cf}} 
+{\bfseries Primer\+\_\+\+Set} (\mbox{\hyperlink{class_primer___set}{Primer\+\_\+\+Set}} $\ast$primer\+\_\+set, ostream \&err\+\_\+msg=cout)
+\item 
+\mbox{\Hypertarget{class_primer___set_ae3c919cd6aa18e8e2c3e4f5d3ea9a37c}\label{class_primer___set_ae3c919cd6aa18e8e2c3e4f5d3ea9a37c}} 
+{\bfseries Primer\+\_\+\+Set} (unsigned int $\ast$primers, unsigned int number\+\_\+primers, unsigned int \+\_\+max\+\_\+number\+\_\+of\+\_\+primers, ostream \&err\+\_\+msg=cout)
+\item 
+\mbox{\Hypertarget{class_primer___set_aa6e3ae72bc7cd4506b48b09e6591bd0f}\label{class_primer___set_aa6e3ae72bc7cd4506b48b09e6591bd0f}} 
+{\bfseries Primer\+\_\+\+Set} (char $\ast$$\ast$primers, unsigned int number\+\_\+primers, unsigned int \+\_\+max\+\_\+number\+\_\+of\+\_\+primers, ostream \&err\+\_\+msg=cout)
+\item 
+\mbox{\Hypertarget{class_primer___set_a55d08f895a8af207b7e06abf8bf95f99}\label{class_primer___set_a55d08f895a8af207b7e06abf8bf95f99}} 
+bool {\bfseries write\+\_\+to\+\_\+file} (char $\ast$filename, ostream \&err\+\_\+msg=cout)
+\item 
+\mbox{\Hypertarget{class_primer___set_a86da618d3bafd760ceb21099b168e54c}\label{class_primer___set_a86da618d3bafd760ceb21099b168e54c}} 
+bool {\bfseries show\+\_\+statistics} (ostream \&out=cout, ostream \&err\+\_\+msg=cout)
+\item 
+\mbox{\Hypertarget{class_primer___set_aca0009d54b4b99a0a45d4e4995bb9818}\label{class_primer___set_aca0009d54b4b99a0a45d4e4995bb9818}} 
+bool {\bfseries show\+\_\+\+All} (ostream \&out=cout, ostream \&err\+\_\+msg=cout)
+\item 
+\mbox{\Hypertarget{class_primer___set_a7c639e643b36dea739026862f12a64d4}\label{class_primer___set_a7c639e643b36dea739026862f12a64d4}} 
+unsigned int {\bfseries get\+\_\+primer\+\_\+as\+\_\+value} (unsigned int position)
+\item 
+\mbox{\Hypertarget{class_primer___set_a1285be11e09dff32a28e8c36d01175c5}\label{class_primer___set_a1285be11e09dff32a28e8c36d01175c5}} 
+bool {\bfseries delete\+\_\+primer} (int $\ast$position, unsigned int number\+\_\+of\+\_\+primers\+\_\+to\+\_\+delete, ostream \&err\+\_\+msg=cout)
+\item 
+\mbox{\Hypertarget{class_primer___set_a136e11664762cb801c833209a68204fe}\label{class_primer___set_a136e11664762cb801c833209a68204fe}} 
+bool {\bfseries add\+\_\+primer} (unsigned int primer\+\_\+value, ostream \&err\+\_\+msg=cout)
+\item 
+\mbox{\Hypertarget{class_primer___set_acbbf2f8583751542a18f895e44643be2}\label{class_primer___set_acbbf2f8583751542a18f895e44643be2}} 
+bool {\bfseries add\+\_\+primer} (char $\ast$primer, ostream \&err\+\_\+msg=cout)
+\item 
+\mbox{\Hypertarget{class_primer___set_af45de3f0a9a7cac592aa66e15f1d6155}\label{class_primer___set_af45de3f0a9a7cac592aa66e15f1d6155}} 
+bool {\bfseries convert\+\_\+primer\+\_\+int\+\_\+to\+\_\+txt} (unsigned int primer\+\_\+value, char $\ast$\&primer, ostream \&err\+\_\+msg=cout)
+\item 
+\mbox{\Hypertarget{class_primer___set_a0691f55ba1bb6e1dca8fcd5cdfd6bd1a}\label{class_primer___set_a0691f55ba1bb6e1dca8fcd5cdfd6bd1a}} 
+bool {\bfseries convert\+\_\+primer\+\_\+txt\+\_\+to\+\_\+int} (char $\ast$primer, unsigned int \&primer\+\_\+value, ostream \&err\+\_\+msg=cout)
+\item 
+\mbox{\Hypertarget{class_primer___set_a6f351e7eb9dc3ceb42beb4fcd368e616}\label{class_primer___set_a6f351e7eb9dc3ceb42beb4fcd368e616}} 
+unsigned int {\bfseries convert\+\_\+primer\+\_\+to\+\_\+reverse\+\_\+complement} (int position, ostream \&err\+\_\+msg=cout)
+\item 
+\mbox{\Hypertarget{class_primer___set_a4eae0937a142b6399cf5b4022f8897df}\label{class_primer___set_a4eae0937a142b6399cf5b4022f8897df}} 
+unsigned int $\ast$ {\bfseries get\+\_\+pointer\+\_\+to\+\_\+primer\+\_\+array} ()
+\item 
+\mbox{\Hypertarget{class_primer___set_ae795b4d40b4da9856b467f09462769e1}\label{class_primer___set_ae795b4d40b4da9856b467f09462769e1}} 
+unsigned int $\ast$ {\bfseries get\+\_\+pointer\+\_\+to\+\_\+reverse\+\_\+complement\+\_\+primer\+\_\+array} ()
+\item 
+\mbox{\Hypertarget{class_primer___set_af9cc2185ff8cb758f383481d138faf8f}\label{class_primer___set_af9cc2185ff8cb758f383481d138faf8f}} 
+unsigned int {\bfseries get\+\_\+number\+\_\+of\+\_\+primers} ()
+\item 
+\mbox{\Hypertarget{class_primer___set_af53fe2ae85933f04a5cc2e159a3ed49f}\label{class_primer___set_af53fe2ae85933f04a5cc2e159a3ed49f}} 
+unsigned int {\bfseries get\+\_\+primer\+\_\+length} ()
+\end{DoxyCompactItemize}
+
+
+The documentation for this class was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+C\+:/\+Users/\+Kamil/\+Documents/\+R\+P\+A-\/\+Optimization/\+R\+P\+A/Primer\+\_\+\+Set.\+h\end{DoxyCompactItemize}
