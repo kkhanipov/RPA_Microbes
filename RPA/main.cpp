@@ -9,20 +9,66 @@
 
 using namespace std;
 
-void test_1()
+bool prepare_pareto(PCR_Profile_Array * pcr_profile_array_background, PCR_Profile_Array * pcr_profile_array_target, unsigned int & optimal_solution, ostream &err_msg = cout)
 {
-	double * x = new double[100];
-	double * y = new double[100];
-	bool * pareto = new bool[100];
-	srand(time(0));
-	for (int i = 0; i < 100; i++)
+	double *target_genome_coverage, *background_genome_coverage;
+	bool *pareto_set;
+	unsigned int number_of_profiles;
+
+	number_of_profiles = pcr_profile_array_background->get_number_of_profiles();
+
+	target_genome_coverage = new double[number_of_profiles];
+	background_genome_coverage = new double[number_of_profiles];
+	pareto_set = new bool[number_of_profiles];
+
+	for (int i = 0; i < number_of_profiles; i++)
 	{
-		x[i] = (double)rand();
-		y[i] = (double)rand();
-		pareto[i] = 0;
+		background_genome_coverage[i] = pcr_profile_array_background->get_pcr_profile(i)->get_total_lenght_long_amplicons();
+		target_genome_coverage[i] = pcr_profile_array_target->get_pcr_profile(i)->get_total_lenght_long_amplicons();
+		pareto_set[i] = false;
 	}
-	
-	Optimization_Toolbox::calculate_pareto_frontier(x, y, pareto, 100, false, true);
+
+	Optimization_Toolbox::calculate_pareto_frontier(target_genome_coverage, background_genome_coverage, pareto_set, number_of_profiles, true, false, err_msg);
+	int *tmp_pareto = new int[number_of_profiles];
+	memset(tmp_pareto, 0, sizeof(int)*number_of_profiles);
+	int n_pareto = 0;
+
+	int position = -1;
+	bool found_new_pareto = false;
+	int count = 0;
+	for (int i = 0; i < number_of_profiles; i++)
+	{
+
+		if (pareto_set[i] == true && pcr_profile_array_target->get_to_be_considered()[i] == 0)
+		{
+
+			tmp_pareto[n_pareto] = i;
+			n_pareto++;
+			found_new_pareto = true;
+			pcr_profile_array_target->mark_profile_pareto(i);
+			pcr_profile_array_background->mark_profile_pareto(i);
+		}
+
+		if (pareto_set[i] == false)
+		{
+			pcr_profile_array_target->delete_pcr_profile(i);
+			pcr_profile_array_background->delete_pcr_profile(i);
+
+			count++;
+		}
+	}
+	//cout << count << endl;
+	if (!found_new_pareto) return false;
+	assert(n_pareto);
+
+	position = tmp_pareto[rand() % n_pareto];
+	optimal_solution = position;
+	delete[]tmp_pareto;
+	delete[] target_genome_coverage;
+	delete[] background_genome_coverage;
+	delete[] pareto_set;
+	return true;
+	return true;
 }
 bool prepare_pareto(PCR_Profile_Array * pcr_profile_array_4_comparison, unsigned int & optimal_solution, ostream &err_msg = cout)
 {
@@ -81,54 +127,21 @@ bool prepare_pareto(PCR_Profile_Array * pcr_profile_array_4_comparison, unsigned
 	delete[] pareto_set;
 	return true;
 }
-bool prepare_pareto(PCR_Profile ** pcr_profiles_4_comparison, unsigned int num_pcr_profiles, unsigned int & optimal_solution, ostream &err_msg=cout)
-{
-	double *genome_coverage, *genome_overrepresentation;
-	bool *pareto_set;
 
-	genome_coverage = new double[num_pcr_profiles];
-	genome_overrepresentation = new double[num_pcr_profiles];
-	pareto_set = new bool[num_pcr_profiles];
-
-	for (int i = 0; i < num_pcr_profiles; i++)
-	{
-		genome_coverage[i] = pcr_profiles_4_comparison[i]->get_total_lenght_long_amplicons();
-		genome_overrepresentation[i] = pcr_profiles_4_comparison[i]->get_total_lenght_short_amplicons();
-		pareto_set[i] = false;
-	}
-
-	Optimization_Toolbox::calculate_pareto_frontier(genome_coverage, genome_overrepresentation, pareto_set, num_pcr_profiles, true, false, err_msg);
-
-	int position = -1;
-	
-	int *tmp_pareto = new int[num_pcr_profiles];
-	memset(tmp_pareto, 0, sizeof(int)*num_pcr_profiles);
-	int n_pareto = 0;
-	for (int i = 0; i < num_pcr_profiles; i++) if (pareto_set[i] == true) tmp_pareto[n_pareto++] = i;
-	assert(n_pareto);
-	position = tmp_pareto[rand() % n_pareto];
-	
-
-
-	optimal_solution = position;
-	delete[]tmp_pareto;
-	delete[] genome_coverage;
-	delete[] genome_overrepresentation;
-	delete[] pareto_set;
-	return true;
-}
 int main()
 {
 	srand(time(0));
-	char * file = "test";
-	Array_Sequences * as;
-	
-	Primer_Set * primers = new Primer_Set("primers.fasta"); assert(primers);
-	as = new Array_Sequences("sequence.fasta", primers->get_primer_length());
-	//as = new Array_Sequences("synthetic.fasta",primers->get_primer_length()); 
-	assert(as);
 
-	as->show_Statistics();
+	Array_Sequences * background;
+	Array_Sequences * target;
+	Primer_Set * primers = new Primer_Set("primers.fasta"); assert(primers);
+	background = new Array_Sequences("Chromosome21.fasta", primers->get_primer_length());	assert(background);
+	target = new Array_Sequences("ATCC_Bacterial_Mix.FASTA", primers->get_primer_length()); assert(target);
+	//as = new Array_Sequences("synthetic.fasta",primers->get_primer_length()); 
+
+
+	background->show_Statistics();
+	target->show_Statistics();
 	
 //	as->show_All();
 
@@ -136,11 +149,18 @@ int main()
 	Primer_Set ** individual_primers;
 	individual_primers = new Primer_Set *[number_of_individual_primers]; assert(individual_primers);
 
-	PCR_Profile_Array * PCR_Profile_array;
-	PCR_Profile_array = new PCR_Profile_Array(); assert(PCR_Profile_array);
 
-	PCR_Profile ** individual_PCR_profiles;
-	individual_PCR_profiles = new PCR_Profile *[number_of_individual_primers]; assert(individual_PCR_profiles);
+	PCR_Profile_Array * PCR_Profile_array_background;
+	PCR_Profile_array_background = new PCR_Profile_Array(); assert(PCR_Profile_array_background);
+
+	PCR_Profile_Array * PCR_Profile_array_target;
+	PCR_Profile_array_target = new PCR_Profile_Array(); assert(PCR_Profile_array_target);
+
+	PCR_Profile ** individual_PCR_profiles_background;
+	individual_PCR_profiles_background = new PCR_Profile *[number_of_individual_primers]; assert(individual_PCR_profiles_background);
+
+	PCR_Profile ** individual_PCR_profiles_target;
+	individual_PCR_profiles_target = new PCR_Profile *[number_of_individual_primers]; assert(individual_PCR_profiles_target);
 
 	unsigned int count = 0;
 	#pragma omp parallel for
@@ -148,65 +168,90 @@ int main()
 	{
 		individual_primers[i] = new Primer_Set(1, 6); assert(individual_primers[i]);
 		individual_primers[i]->add_primer(primers->get_primer_as_value(i));
-		individual_PCR_profiles[i] = new PCR_Profile(individual_primers[i], as->get_pointer_to_sequence_object(0));
-		assert(individual_PCR_profiles[i]);
+
+		individual_PCR_profiles_background[i] = new PCR_Profile(individual_primers[i], background->get_pointer_to_sequence_object(0));
+		assert(individual_PCR_profiles_background[i]);
+
+		individual_PCR_profiles_target[i] = new PCR_Profile(individual_primers[i], target->get_pointer_to_sequence_object(0));
+		assert(individual_PCR_profiles_target[i]);
 		count++;
 	}
 
 	for (int i = 0; i < number_of_individual_primers; i++)
 	{
-		PCR_Profile_array->add_pcr_profile(individual_PCR_profiles[i]);
+		PCR_Profile_array_background->add_pcr_profile(individual_PCR_profiles_background[i]);
+		PCR_Profile_array_target->add_pcr_profile(individual_PCR_profiles_target[i]);
 	}
 	
 	unsigned int pareto_index;
-	prepare_pareto(PCR_Profile_array, pareto_index);
+	prepare_pareto(PCR_Profile_array_background, PCR_Profile_array_target, pareto_index);
 	
 
 	//prepare_pareto(individual_PCR_profiles, number_of_individual_primers, pareto_index);
-	PCR_Profile * pareto_PCR_profile = new PCR_Profile(PCR_Profile_array->get_pcr_profile(pareto_index)); assert(pareto_PCR_profile);
-	pareto_PCR_profile->show_statistics();
+	PCR_Profile * pareto_PCR_profile_background = new PCR_Profile(PCR_Profile_array_background->get_pcr_profile(pareto_index)); assert(pareto_PCR_profile_background);
+	PCR_Profile * pareto_PCR_profile_target = new PCR_Profile(PCR_Profile_array_target->get_pcr_profile(pareto_index)); assert(pareto_PCR_profile_target);
+	
+	cout << "Background % Amplified" << "\t" << "Target % Amplified" << endl;
+	cout << pareto_PCR_profile_background->get_total_lenght_long_amplicons() / background->get_pointer_to_sequence_object(0)->get_usable_length() << "\t" << pareto_PCR_profile_target->get_total_lenght_long_amplicons() / target->get_pointer_to_sequence_object(0)->get_usable_length() << endl;
+	PCR_Profile_array_background->compress_left();
+	PCR_Profile_array_target->compress_left();
 
-	PCR_Profile_array->compress_left();
-	//PCR_Profile_array->get_stats();
 
 	count = 0;
 	while (true)
 	{
-		system("PAUSE");
-		PCR_Profile ** temp_pareto_PCR_profile;
-		temp_pareto_PCR_profile = new PCR_Profile *[number_of_individual_primers]; assert(temp_pareto_PCR_profile);
+
+		PCR_Profile ** temp_pareto_PCR_profile_background;
+		temp_pareto_PCR_profile_background = new PCR_Profile *[number_of_individual_primers]; assert(temp_pareto_PCR_profile_background);
+
+
+		PCR_Profile ** temp_pareto_PCR_profile_target;
+		temp_pareto_PCR_profile_target = new PCR_Profile *[number_of_individual_primers]; assert(temp_pareto_PCR_profile_target);
 
 #pragma omp parallel for
 		for (int i = 0; i < number_of_individual_primers; i++)
 		{
-			temp_pareto_PCR_profile[i] = new PCR_Profile(pareto_PCR_profile, individual_PCR_profiles[i]); assert(temp_pareto_PCR_profile[i]);
+			temp_pareto_PCR_profile_background[i] = new PCR_Profile(pareto_PCR_profile_background, individual_PCR_profiles_background[i]); assert(temp_pareto_PCR_profile_background[i]);
+			temp_pareto_PCR_profile_target[i] = new PCR_Profile(pareto_PCR_profile_target, individual_PCR_profiles_target[i]); assert(temp_pareto_PCR_profile_target[i]);
+
 		}
 		count++;
 
 		for (int i = 0; i < number_of_individual_primers; i++)
 		{
-			PCR_Profile_array->add_pcr_profile(temp_pareto_PCR_profile[i]);
+			PCR_Profile_array_background->add_pcr_profile(temp_pareto_PCR_profile_background[i]);
+			PCR_Profile_array_target->add_pcr_profile(temp_pareto_PCR_profile_target[i]);
+
 		}
-		if (!prepare_pareto(PCR_Profile_array, pareto_index)) break;
+		if (!prepare_pareto(PCR_Profile_array_background, PCR_Profile_array_target, pareto_index)) break;
 
 		//prepare_pareto(temp_pareto_PCR_profile, number_of_individual_primers, pareto_index);
 
 		//if (temp_pareto_PCR_profile[pareto_index]->get_total_lenght_long_amplicons() > pareto_PCR_profile->get_total_lenght_long_amplicons() ||
 		//	temp_pareto_PCR_profile[pareto_index]->get_total_lenght_short_amplicons() < pareto_PCR_profile->get_total_lenght_short_amplicons())
 		//{
-			delete pareto_PCR_profile;
-			pareto_PCR_profile = new PCR_Profile(PCR_Profile_array->get_pcr_profile(pareto_index)); assert(pareto_PCR_profile);
-			pareto_PCR_profile->show_statistics();
-			PCR_Profile_array->compress_left();
+			delete pareto_PCR_profile_background; delete pareto_PCR_profile_target;
+			pareto_PCR_profile_background = new PCR_Profile(PCR_Profile_array_background->get_pcr_profile(pareto_index)); assert(pareto_PCR_profile_background);
+			pareto_PCR_profile_target = new PCR_Profile(PCR_Profile_array_target->get_pcr_profile(pareto_index)); assert(pareto_PCR_profile_target);
+
+			cout << pareto_PCR_profile_background->get_total_lenght_long_amplicons() / background->get_pointer_to_sequence_object(0)->get_usable_length() << "\t" << pareto_PCR_profile_target->get_total_lenght_long_amplicons() / target->get_pointer_to_sequence_object(0)->get_usable_length() << endl;
+
+			PCR_Profile_array_background->compress_left();
+			PCR_Profile_array_target->compress_left();
 			//PCR_Profile_array->get_stats();
 		//}
 		//else break;
 		
-		for (int i = 0; i<number_of_individual_primers; i++) delete temp_pareto_PCR_profile[i];
-		delete[]temp_pareto_PCR_profile;
+			for (int i = 0; i < number_of_individual_primers; i++)
+			{
+				delete temp_pareto_PCR_profile_background[i];
+				delete temp_pareto_PCR_profile_target[i];
+			}
+		delete[]temp_pareto_PCR_profile_background;
+		delete[]temp_pareto_PCR_profile_target;
+
 		
 	}
 
-	system("PAUSE");
 	return 1;
 }

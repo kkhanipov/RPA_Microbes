@@ -13,6 +13,7 @@ class Sequence
 	char * dna_sequence;
 	unsigned int * int_dna_sequence;
 	unsigned int seq_length;
+	unsigned int usable_length;
 
 public:
 	
@@ -25,6 +26,7 @@ public:
 	char * get_pointer_to_sequence() {return dna_sequence;}
 	unsigned int * get_pointer_to_sequence_int() { return int_dna_sequence; }
 	int get_sequence_length() { return seq_length; }
+	unsigned int get_usable_length() { return usable_length; }
 };
 Sequence::~Sequence()
 {
@@ -39,6 +41,7 @@ Sequence::~Sequence()
 }
 Sequence::Sequence(Sequence *_sequence, unsigned int _primer_length, ostream & err_msg)
 {
+	usable_length = 0;
 	if (_sequence->get_sequence_length() == 0)
 	{
 		err_msg << "ERROR: Sequence::Sequence ==> _sequence_length == 0" << endl; 
@@ -69,6 +72,7 @@ Sequence::Sequence(Sequence *_sequence, unsigned int _primer_length, ostream & e
 			primer_value = 555555;
 			Optimization_Toolbox::convert_primer_txt_to_int(&dna_sequence[i], primer_length, primer_value);
 			int_dna_sequence[i] = primer_value;
+			if (primer_value != 555555)usable_length++;
 		}
 	}
 	
@@ -76,6 +80,7 @@ Sequence::Sequence(Sequence *_sequence, unsigned int _primer_length, ostream & e
 
 Sequence::Sequence(char * _sequence, unsigned int _sequence_length, unsigned int _primer_length, ostream & err_msg)
 {
+	usable_length = 0;
 	if (_sequence_length == 0)
 	{
 		err_msg << "ERROR: Sequence::Sequence ==> _sequence_length == 0" << endl; 
@@ -106,6 +111,7 @@ Sequence::Sequence(char * _sequence, unsigned int _sequence_length, unsigned int
 			primer_value = 555555;
 			Optimization_Toolbox::convert_primer_txt_to_int(&dna_sequence[i], primer_length, primer_value);
 			int_dna_sequence[i] = primer_value;
+			if (primer_value != 555555)usable_length++;
 		}
 	}
 }
